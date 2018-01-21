@@ -4,6 +4,7 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.specs.FreeSpec
 import recursion.adding.multiplying.canReach
+import recursion.fibonacci.fibonacci
 import recursion.reduce.reduceKt
 
 class Tests : FreeSpec() {
@@ -57,6 +58,17 @@ class Tests : FreeSpec() {
                             testCanReach(n, add, multiply)
                     }
 
+                }
+            }
+            "Fibonacci" - {
+                "fibonacci should return fibonacci number in position" {
+                    val fibonacciList = listOf(
+                        1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377,
+                        610, 987)
+
+                    fibonacciList.forEachIndexed { index, number ->
+                        fibonacci(index) shouldBe number
+                    }
                 }
             }
         }
