@@ -4,7 +4,7 @@ Implement `List.reduce` using recursion.
 
 `reduce` behaves exactly likes `fold`, but instead of receiving an accumulator it uses the first element of the list as the initial value.
 
-If you want to use the provided tests the function must be called `reduceKt` and must be inside the `recursion` package.
+If you want to use the provided tests the function must be called `reduceKt` and must be inside the `recursion.reduce` package.
 
 ## Arguments
 
@@ -26,7 +26,7 @@ list.reduceKt(String::plus) // "functionalhub.com"
 
 ## Solution
 
-<details><summary>**Reveal**</summary><p>
+<details><summary><strong>Reveal</strong></summary><p>
 
 ---
 ```kotlin
@@ -47,3 +47,7 @@ fun <A> List<A>.reduceKt(operation: (acc: A, A) -> A): A = split?.let {
 ```
 
 </p></details>
+
+---
+
+Copyright © [FunctionalHub.com](http://functionalhub.com) 2018. All rights reserved.
