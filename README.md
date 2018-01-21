@@ -8,6 +8,8 @@
 
 ### 1 - Recursion
 
+#### - [Adding & Multiplying](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/recursion/adding/multiplying)
+
 #### - [Reduce](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/recursion/reduce)
 
 # How to test
