@@ -1,5 +1,11 @@
 // Copyright © FunctionalHub.com 2018. All rights reserved.
 
+import functions.cps.FailureException
+import functions.cps.performOperationCPS
+import functions.currying.add
+import functions.currying.curried
+import functions.partial.Element
+import functions.partial.partial
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.specs.FreeSpec
@@ -69,6 +75,42 @@ class Tests : FreeSpec() {
                     fibonacciList.forEachIndexed { index, number ->
                         fibonacci(index) shouldBe number
                     }
+                }
+            }
+        }
+        "2 - Functions" - {
+            "Currying" - {
+                "curried function should curry any bi-function" {
+                    ::add.curried()(1)(3) shouldBe 4
+                    String::plus.curried()("He")("llo") shouldBe "Hello"
+                }
+            }
+            "Partial" - {
+                "partial must return a partially applied constructor" {
+                    partial(3) shouldBe Element("Blog", "Fixed", 3)
+                    partial(42) shouldBe Element("Blog", "Fixed", 42)
+                }
+            }
+            "CPS" - {
+                "performOperationCPS should call onSuccess if true" {
+                    var result = 0
+
+                    performOperationCPS(
+                        { true },
+                        { int: Int -> result = int},
+                        { throw AssertionError("Shouldn't be called") })
+
+                    result shouldBe 42
+                }
+                "performOperationCPS should call onFailure if false" {
+                    var result = Exception()
+
+                    performOperationCPS(
+                        { false },
+                        { throw AssertionError("Shouldn't be called")},
+                        { ex: Exception -> result = ex })
+
+                    result shouldBe FailureException("Error")
                 }
             }
         }

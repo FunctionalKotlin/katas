@@ -14,6 +14,14 @@
 
 #### - [Fibonacci](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/recursion/fibonacci)
 
+### 2 - Functions
+
+#### - [Currying](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functions/currying)
+
+#### - [Partial Application](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functions/partial)
+
+#### - [CPS](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functions/cps)
+
 # How to test
 
 To test the different katas you can run the [unit tests provided](https://github.com/FunctionalKotlin/katas/blob/master/src/test/java/Tests.kt) inside the `test` folder.
