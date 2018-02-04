@@ -1,5 +1,16 @@
 // Copyright © FunctionalHub.com 2018. All rights reserved.
 
+import functional.transforms.BoxArt
+import functional.transforms.castsDemo
+import functional.transforms.filtermap.getFiveRatingMoviesIds
+import functional.transforms.flatMap.advanced.getAllMoviesInformation
+import functional.transforms.flatMap.simple.getAllMoviesIds
+import functional.transforms.map.getMovies
+import functional.transforms.mapreduce.getUrlOfLargestBoxArt
+import functional.transforms.movieListsDemo
+import functional.transforms.moviesDemo
+import functional.transforms.reduce.getLargestRating
+import functional.transforms.zip.getFirstActorMap
 import functions.cps.FailureException
 import functions.cps.performOperationCPS
 import functions.currying.add
@@ -111,6 +122,63 @@ class Tests : FreeSpec() {
                         { ex: Exception -> result = ex })
 
                     result shouldBe FailureException("Error")
+                }
+            }
+        }
+        "3 - Functional transforms" - {
+            "Map" - {
+                "getMovies should return valid map" {
+                    getMovies(moviesDemo) shouldBe
+                        moviesDemo.map { it.id to it.title }.toMap()
+                }
+            }
+            "Map & Filter" - {
+                "getFiveRatingMoviesIds should return valid list" {
+                    getFiveRatingMoviesIds(moviesDemo) shouldBe moviesDemo.filter {
+                        it.rating == 5.0
+                    }.map {
+                        it.id
+                    }
+                }
+            }
+            "FlatMap" - {
+                "Simple" - {
+                    "getAllMoviesIds should return valid list" {
+                        getAllMoviesIds(movieListsDemo) shouldBe
+                            moviesDemo.map { it.id }
+                    }
+                }
+                "Advanced" - {
+                    "getAllMoviesInformation should return valid list" {
+                        getAllMoviesInformation(movieListsDemo) shouldBe
+                            moviesDemo.map {
+                                mapOf(
+                                    "id" to it.id, "title" to it.title,
+                                    "boxArt" to it.boxArts.boxArt150())
+                            }
+                    }
+                }
+            }
+            "Reduce" - {
+                "getLargestRating should return largest rating" {
+                    getLargestRating(moviesDemo) shouldBe 5.0
+                }
+            }
+            "MapReduce" - {
+                "getUrlOfLargestBoxArt should return valid url" {
+                    getUrlOfLargestBoxArt(moviesDemo) shouldBe
+                        moviesDemo.flatMap {
+                            it.boxArts
+                        }.biggestBoxArt().url
+                }
+            }
+            "Zip" - {
+                "getFirstActorMap returns a map with the first actor names" {
+                    getFirstActorMap(moviesDemo, castsDemo) shouldBe moviesDemo
+                        .zip(castsDemo)
+                        .map { (movie, cast) ->
+                            movie.title to cast.nameOfFirstActor()
+                        }.toMap()
                 }
             }
         }
