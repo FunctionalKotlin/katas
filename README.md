@@ -38,6 +38,22 @@
 
 #### - [Zip](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functional/transforms/zip)
 
+### 4 - Functor
+
+#### - [Creating the Try Functor](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functional/abstractions/functor)
+
+### 5 - Monoid
+
+#### - [Adding Monoid to Try](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functional/abstractions/monoid)
+
+### 6 - Monad
+
+#### - [Adding Monad to Try](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functional/abstractions/monad)
+
+### 7 - Applicative
+
+#### - [Adding Applicative to Try](https://github.com/FunctionalKotlin/katas/tree/master/src/main/java/functional/abstractions/applicative)
+
 # How to test
 
 To test the different katas you can run the [unit tests provided](https://github.com/FunctionalKotlin/katas/blob/master/src/test/java/Tests.kt) inside the `test` folder.

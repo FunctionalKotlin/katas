@@ -43,7 +43,7 @@ tailrec fun <A, B> List<A>.fold(accumulator: B, operation: (B, A) -> B): B {
 
 fun <A> List<A>.reduceKt(operation: (acc: A, A) -> A): A = split?.let {
     (head, tail) -> tail.fold(head, operation)
-} ?: throw UnsupportedOperationException("Empty list can't be reduced.")
+} ?: throw UnsupportedOperationException("value")
 ```
 
 </p></details>

@@ -2,6 +2,7 @@
 
 import functional.transforms.BoxArt
 import functional.transforms.Cast
+import functional.abstractions.functor.PredicateException
 import java.util.Random
 
 fun ClosedRange<Int>.random() = Random().nextInt(endInclusive - start) + start
@@ -19,3 +20,8 @@ val BoxArt.area: Int
 fun Cast.nameOfFirstActor(): String? = people.firstOrNull()
     ?.name
     ?.substringBefore(" ")
+
+fun <A, B, C> ((A, B) -> C).curried(): (A) -> (B) -> C =
+    { a -> { b -> this(a, b) } }
+
+fun throwException(): String = throw PredicateException("Error")

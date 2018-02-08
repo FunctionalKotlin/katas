@@ -1,6 +1,7 @@
 // Copyright © FunctionalHub.com 2018. All rights reserved.
 
-import functional.transforms.BoxArt
+import functional.abstractions.applicative.ap
+import functional.abstractions.applicative.map
 import functional.transforms.castsDemo
 import functional.transforms.filtermap.getFiveRatingMoviesIds
 import functional.transforms.flatMap.advanced.getAllMoviesInformation
@@ -17,6 +18,16 @@ import functions.currying.add
 import functions.currying.curried
 import functions.partial.Element
 import functions.partial.partial
+import functional.abstractions.functor.PredicateException
+import functional.abstractions.functor.Try
+import functional.abstractions.functor.filter
+import functional.abstractions.functor.fold
+import functional.abstractions.functor.get
+import functional.abstractions.functor.isFailure
+import functional.abstractions.functor.isSuccess
+import functional.abstractions.functor.map
+import functional.abstractions.monad.flatMap
+import functional.abstractions.monoid.plus
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.specs.FreeSpec
@@ -179,6 +190,168 @@ class Tests : FreeSpec() {
                         .map { (movie, cast) ->
                             movie.title to cast.nameOfFirstActor()
                         }.toMap()
+                }
+            }
+        }
+        "4 - Functors" - {
+            "Try" - {
+                "Try companion should be able to be used as a function" {
+                    Try { "Test" }.get() shouldBe "Test"
+
+                    val exception = shouldThrow<PredicateException> {
+                        Try { throwException() }.get()
+                    }
+
+                    exception.message shouldBe "Error"
+                }
+                "filter over Failure should return original exception" {
+                    shouldThrow<NumberFormatException> {
+                        val aTry: Try<Int> = Try { "Test".toInt() }
+                            .filter { int: Int -> int > 5 } as Try<Int>
+
+                        aTry.get()
+                    }
+                }
+                "filter over Success should filter valid value" {
+                    val aTry: Try<Int> = Try { "6".toInt() }.filter {
+                        int: Int -> int > 5
+                    } as Try<Int>
+
+                    aTry.get() shouldBe 6
+                }
+                "filter over Success should fail if invalid value" {
+                    val exception = shouldThrow<PredicateException> {
+                        val aTry: Try<Int> = Try { "2".toInt() }
+                            .filter { int: Int -> int > 5 } as Try<Int>
+
+                        aTry.get()
+                    }
+
+                    exception.message shouldBe "Predicate does not hold for 2"
+                }
+                "isSuccess should return false when Failure" {
+                    Try { throwException() }
+                        .isSuccess() shouldBe false
+                }
+                "isSuccess should return true when Success" {
+                    Try { "Test" }.isSuccess() shouldBe true
+                }
+                "isFailure should return true when Failure" {
+                    Try { throwException() }
+                        .isFailure() shouldBe true
+                }
+                "isFailure should return false when Success" {
+                    Try { "Test" }.isFailure() shouldBe false
+                }
+                "map should transform the value if Success" {
+                    val aTry: Try<String> = Try { "Test" }
+                        .map { string: String -> "Valid $string" }
+                        as Try<String>
+
+                    aTry.get() shouldBe "Valid Test"
+                }
+                "map should return original exception if Failure" {
+                    val exception = shouldThrow<PredicateException> {
+                        val aTry: Try<String> = Try { throwException() }
+                            .map { string: String -> "Valid $string" }
+                            as Try<String>
+
+                        aTry.get()
+                    }
+
+                    exception.message shouldBe "Error"
+                }
+                "fold on success should return result from second parameter" {
+                    val result = Try { "4" }
+                        .fold({ 3 }, { string: String -> string.toInt() })
+
+                    result shouldBe 4
+                }
+                "fold on failure should return result from first parameter" {
+                    val result = Try { throwException() }
+                        .fold({ 3 }, { string: String -> string.toInt() })
+
+                    result shouldBe 3
+                }
+            }
+        }
+        "5 - Monoids" - {
+            "Try" - {
+                "plus should return failure if first Try is failure" {
+                    shouldThrow<PredicateException> {
+                        val aTry: Try<String> = Try { throwException() }
+                            .plus(Try { " Hi!" }) {
+                                a1: String, a2: String -> a1 + a2
+                            } as Try<String>
+
+                        aTry.get()
+                    }
+                }
+                "plus should return failure if second Try is failure" {
+                    shouldThrow<PredicateException> {
+                        val aTry: Try<String> = Try { "Hello!" }
+                            .plus(Try { throwException() }) {
+                                a1: String, a2: String -> a1 + a2
+                            } as Try<String>
+
+                        aTry.get()
+                    }
+                }
+                "plus should concat if both are success" {
+                    val aTry: Try<String> = Try { "Hello!" }
+                            .plus(Try { " Hi!" }) {
+                                a1: String, a2: String -> a1 + a2
+                            } as Try<String>
+
+                    aTry.get() shouldBe "Hello! Hi!"
+                }
+            }
+        }
+        "6 - Monads" - {
+            "Try" - {
+                "flatMap should transform if Success" {
+                    val aTry: Try<String> = Try { "Test" }.flatMap {
+                        value: String -> Try { "A $value" }
+                    } as Try<String>
+
+                    aTry.get() shouldBe "A Test"
+                }
+                "flatMap should fail if Failure" {
+                    val exception = shouldThrow<PredicateException> {
+                        val aTry: Try<String> = Try { "Test" }.flatMap {
+                            Try { throwException() }
+                        } as Try<String>
+
+                        aTry.get()
+                    }
+
+                    exception.message shouldBe "Error"
+                }
+            }
+        }
+        "7 - Applicatives" - {
+            "Try" - {
+                "Apply parameter should work if all parameters are correct" {
+                    data class Class(val a: String, val b: Int)
+
+                    val value: Try<Class> = ((::Class.curried() map
+                        Try { "hello" }) as Try<(Int) -> Class> ap
+                        Try { 3 }) as Try<Class>
+
+                    value.get() shouldBe Class("hello", 3)
+                }
+                "Apply parameter should fail if any parameter is incorrect" {
+                    data class Class(val a: String, val b: Int)
+
+                    val exception = shouldThrow<PredicateException> {
+                        val value: Try<Class> = ((::Class.curried() map
+                            Try { throwException() }) as Try<(Int) -> Class> ap
+                            Try { 3 }) as Try<Class>
+
+                        value.get()
+                    }
+
+                    exception.message shouldBe "Error"
                 }
             }
         }
